@@ -45,18 +45,30 @@
         <input type="color" v-model="state.backgroundColor">
       </div>
 
+      <div>
+        <label>Enable Animation:</label>
+        <input type="checkbox" v-model="state.enableAnimation">
+      </div>
+
+      <div>
+        <label>Animation Speed:</label>
+        <input type="range" v-model="state.animationSpeed" min="0.001" max="0.05" step="0.001">
+        <span>{{ state.animationSpeed }}</span>
+      </div>
+
       <button @click="applySettings">Apply Settings</button>
     </div>
 
     <div class="viewer">
       <TerrainGenerator 
-        v-show="showTerrain"
         :terrainSize="state.terrainSize"
         :segments="state.segments"
         :heightScaling="state.heightScaling"
         :noiseScale="state.noiseScale"
         :terrainColor="state.terrainColor"
         :backgroundColor="state.backgroundColor"
+        :enableAnimation="state.enableAnimation"
+        :animationSpeed="state.animationSpeed"
         :noiseType="state.noiseType"
         :texturePaths="{
           albedo: '/textures/albedo.jpg',
@@ -75,6 +87,8 @@ import TerrainGenerator from '@mastashake08/terrain-generator'
 
 // Terrain configuration state
 const state = reactive({
+  enableAnimation: false,
+  animationSpeed: 0.01,
   terrainSize: 10000,
   segments: 2048,
   heightScaling: 10,
@@ -88,9 +102,19 @@ const terrainRef = ref(null)
 const showTerrain = ref(false)
 // Function to apply settings dynamically
 const applySettings = () => {
+
   if (terrainRef.value) {
-    
-    showTerrain.value = true
+    terrainRef.value.updateSettings({
+      terrainSize: state.terrainSize,
+      segments: state.segments,
+      heightScaling: state.heightScaling,
+      noiseScale: state.noiseScale,
+      terrainColor: state.terrainColor,
+      backgroundColor: state.backgroundColor,
+      noiseType: state.noiseType,
+      enableAnimation: state.enableAnimation,
+      animationSpeed: state.animationSpeed
+    })
   }
 }
 </script>
@@ -119,6 +143,6 @@ const applySettings = () => {
 .viewer {
   flex-grow: 1;
   height: 100vh;
-  width: 100%;
+  width: 80%;
 }
 </style>
